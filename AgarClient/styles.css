@@ -1,0 +1,10 @@
+﻿.circle{
+    display:inline-block;
+    width:100px;
+    height:100px;
+    background:green;
+    border-radius:70px;     
+    position:absolute;
+    top:0;
+    left:0;
+}
