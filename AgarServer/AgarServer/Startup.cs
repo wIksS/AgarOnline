@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Owin;
 using Owin;
 using Microsoft.Owin.Cors;
+using Ninject;
 
 [assembly: OwinStartup(typeof(AgarServer.Startup))]
 

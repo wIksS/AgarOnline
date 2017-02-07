@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ninject;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,9 +12,13 @@ namespace AgarServer
         private int counter = 0;
         private static GameEngine instance;
         private Random random;
-        private GameEngine()
+        private IColorGenerator colorGenerator;
+
+        [Inject]
+        private GameEngine(IColorGenerator colorGenerator)
         {
             this.random = new Random();
+            this.colorGenerator = colorGenerator;
             this.players = new Dictionary<string, Player>();
         }
 
@@ -23,7 +28,7 @@ namespace AgarServer
             {
                 if (instance == null)
                 {
-                    instance = new GameEngine();
+                    instance = new GameEngine(NinjectObjectFactory.GetObject<IColorGenerator>());
                 }
 
                 return instance;
@@ -51,8 +56,15 @@ namespace AgarServer
 
         public Player CreatePlayer(string id)
         {
+            Position playerPosition = new Position(random.Next(0, 600), random.Next(0, 1300));
             Player player = new Player()
-            { Left = random.Next(0, 1300), Top = random.Next(0,600), Id = id, Color = "green" };
+            {
+                Position = playerPosition,
+                Id = id,
+                Color = this.colorGenerator.GetColor(),
+                Radius = random.Next(0, 100);
+            };
+
             players.Add(player.Id, player);
             counter++;
 

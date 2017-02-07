@@ -9,6 +9,8 @@ namespace AgarServer
 {
     public class PlayerHub : Hub
     {
+        private static Dictionary<string, Broadcaster> broadcasters = new Dictionary<string, Broadcaster>();
+
         public override Task OnDisconnected(bool stopCalled)
         {
             var player = GameEngine.Instance.Players.FirstOrDefault(p => p.Value.ConnectionId == Context.ConnectionId);
@@ -23,10 +25,10 @@ namespace AgarServer
 
         public void UpdatePlayer(PlayerInput input)
         {
-            var player = GameEngine.Instance.GetPlayer(input.Id);
-            player.Left = input.MouseLeft;
-            player.Top = input.MouseTop;
-            Clients.All.updatePlayer(player);
+            if (PlayerHub.broadcasters.ContainsKey(input.Id))
+            {
+                PlayerHub.broadcasters[input.Id].MousePosition = input.MousePosition;
+            }
         }
 
         public void SpawnPlayer()
@@ -37,6 +39,8 @@ namespace AgarServer
             Clients.Caller.spawnCurrentPlayer(player);
             var otherPlayers = GameEngine.Instance.GetOtherPlayers(player.Id);
             Clients.Caller.spawnOtherPlayers(otherPlayers);
+
+            PlayerHub.broadcasters.Add(player.Id,new Broadcaster(player, new Position(0, 0)));
         }
     }
 }   

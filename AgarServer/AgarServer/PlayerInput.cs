@@ -11,10 +11,7 @@ namespace AgarServer
         [JsonProperty("id")]
         public string Id { get; set; }
 
-        [JsonProperty("mouseLeft")]
-        public int MouseLeft { get; set; }
-
-        [JsonProperty("mouseTop")]
-        public int MouseTop { get; set; }
+        [JsonProperty("mousePosition")]
+        public Position MousePosition { get; set; }
     }
 }

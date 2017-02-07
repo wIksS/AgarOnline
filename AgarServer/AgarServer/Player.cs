@@ -14,11 +14,11 @@ namespace AgarServer
         [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty("left")]
-        public int Left { get; set; }
+        [JsonProperty("position")]
+        public Position Position { get; set; }
 
-        [JsonProperty("top")]
-        public int Top { get; set; }
+        [JsonProperty("radius")]
+        public double Radius { get; set; }
 
         [JsonProperty("color")]
         public string Color { get; set; }
