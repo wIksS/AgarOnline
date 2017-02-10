@@ -10,10 +10,10 @@
     <!--<div class="circle"></div>-->
 
     <script src="Scripts/jquery-1.12.4.js"></script>
-    <script src="Scripts/jquery-ui-1.12.1.js"></script>
     <script src="Scripts/jquery.signalR-2.2.1.js"></script>
     <script src="http://localhost:17962/signalr/hubs"></script>
     <script src="Scripts/fabric.js"></script>
+    <script src="position.js"></script>
     <script src="circle.js"></script>
     <script src="player.js"></script>
     <script src="game.js"></script>
@@ -22,6 +22,8 @@
         let canvas;
         let game;
         let playersHub;
+        let mousePositionEvent;
+        let moved = false;
 
         $(function () {
             canvas = new fabric.Canvas('gameCanvas');
@@ -32,14 +34,27 @@
             
             $.connection.hub.start().done(function () {
                 playerHub.server.spawnPlayer();
-            });            
+            });
+
+            setInterval(updateMousePosition, 50);
         });
 
-        $("body").mousemove(function (event) {
-            var player = game.getPlayer(playersHub.currentPlayer.id);
-            if (player) {
-                playersHub.hub.server.updatePlayer({ id: player.id, mouseLeft: event.pageX, mouseTop: event.pageY});
+        function updateMousePosition() {
+            if (moved && playersHub.currentPlayer) {
+                var player = game.getPlayer(playersHub.currentPlayer.id);
+                if (player) {
+                    playersHub.hub.server.updatePlayer({
+                        id: player.id, mousePosition:
+                            { left: mousePositionEvent.pageX, top: mousePositionEvent.pageY }
+                    });
+                }
+                moved = false;
             }
+        }
+
+        $("body").mousemove(function (event) {
+            moved = true;
+            mousePositionEvent = event;
         });
     </script>
 </body>

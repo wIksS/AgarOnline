@@ -13,15 +13,24 @@ namespace AgarServer
 
         public override Task OnDisconnected(bool stopCalled)
         {
-            var player = GameEngine.Instance.Players.FirstOrDefault(p => p.Value.ConnectionId == Context.ConnectionId);
-            if (player.Value != null)
-            {
-                GameEngine.Instance.Players.Remove(player.Key);
-                Clients.AllExcept(Context.ConnectionId).removePlayer(player.Value);
-            }
+            PlayerHub.RemovePlayer(
+                GlobalHost.ConnectionManager.GetHubContext<PlayerHub>(),
+                Context.ConnectionId);
 
             return base.OnDisconnected(stopCalled);
-        }       
+        }
+
+        public static void RemovePlayer(IHubContext context, string id)
+        {
+            var player = GameEngine.Instance.RemovePlayer(id);
+            if (player != null)
+            {
+                PlayerHub.broadcasters[player.Id].Terminate();
+                PlayerHub.broadcasters.Remove(player.Id);
+
+                context.Clients.All.removePlayer(player);
+            }
+        }
 
         public void UpdatePlayer(PlayerInput input)
         {
@@ -37,10 +46,13 @@ namespace AgarServer
             player.ConnectionId = Context.ConnectionId;
             Clients.AllExcept(Context.ConnectionId).spawnNewPlayer(player);
             Clients.Caller.spawnCurrentPlayer(player);
+            Clients.Caller.spawnAllShapes(GameEngine.Instance.ShapesGenerator.GetAllShapes());
             var otherPlayers = GameEngine.Instance.GetOtherPlayers(player.Id);
             Clients.Caller.spawnOtherPlayers(otherPlayers);
 
-            PlayerHub.broadcasters.Add(player.Id,new Broadcaster(player, new Position(0, 0)));
+            IPlayerColliser colliser = NinjectObjectFactory.GetObject<IPlayerColliser>();
+            IShapesColliser shapesColliser = NinjectObjectFactory.GetObject<IShapesColliser>();
+            PlayerHub.broadcasters.Add(player.Id, new Broadcaster(colliser, shapesColliser,player, new Position(0, 0)));
         }
     }
-}   
+}

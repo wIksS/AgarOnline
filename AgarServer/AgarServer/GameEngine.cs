@@ -1,4 +1,5 @@
-﻿using Ninject;
+﻿using AgarServer.Common;
+using Ninject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +16,16 @@ namespace AgarServer
         private IColorGenerator colorGenerator;
 
         [Inject]
-        private GameEngine(IColorGenerator colorGenerator)
+        private GameEngine(IColorGenerator colorGenerator, IShapesGenerator generator)
         {
+            this.ShapesGenerator = generator;
             this.random = new Random();
             this.colorGenerator = colorGenerator;
             this.players = new Dictionary<string, Player>();
+            generator.GenerateShapes();
         }
+
+        public IShapesGenerator ShapesGenerator{ get; set; }
 
         public static GameEngine Instance
         {
@@ -28,7 +33,7 @@ namespace AgarServer
             {
                 if (instance == null)
                 {
-                    instance = new GameEngine(NinjectObjectFactory.GetObject<IColorGenerator>());
+                    instance = new GameEngine(NinjectObjectFactory.GetObject<IColorGenerator>(), NinjectObjectFactory.GetObject<IShapesGenerator>());
                 }
 
                 return instance;
@@ -56,13 +61,13 @@ namespace AgarServer
 
         public Player CreatePlayer(string id)
         {
-            Position playerPosition = new Position(random.Next(0, 600), random.Next(0, 1300));
+            Position playerPosition = Position.GetRandomPosition(random, GlobalConstants.GameHeight, GlobalConstants.GameWidth);
             Player player = new Player()
             {
                 Position = playerPosition,
                 Id = id,
                 Color = this.colorGenerator.GetColor(),
-                Radius = random.Next(0, 100);
+                Radius = random.Next(5, GlobalConstants.InitialRadius)
             };
 
             players.Add(player.Id, player);
@@ -74,6 +79,19 @@ namespace AgarServer
         public Player GetPlayer(string id)
         {
             return this.players[id];
+        }
+
+        public Player RemovePlayer(string id)
+        {
+            var player = GameEngine.Instance.Players.FirstOrDefault(p => p.Value.ConnectionId == id);
+            if (player.Value != null)
+            {
+                Instance.Players.Remove(player.Key);
+
+                return player.Value;
+            }
+
+            return null;
         }
     }
 }

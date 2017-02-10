@@ -7,14 +7,30 @@
         this.hub.client.spawnCurrentPlayer = this.spawnCurrentPlayer.bind(this);
         this.hub.client.removePlayer = this.removePlayer.bind(this);
         this.hub.client.spawnOtherPlayers = this.spawnOtherPlayers.bind(this);
+        this.hub.client.spawnAllShapes = this.spawnAllShapes.bind(this);
+        this.hub.client.changePlayerRadius = this.changePlayerRadius.bind(this);
+        this.hub.client.removeShape = this.removeShape.bind(this);
     }
 
     updatePlayer(response) {
-        game.getPlayer(response.id).move(response.left, response.top);
+        let player = game.getPlayer(response.id);
+        if (player) {
+            player.move(response.position);
+        }
         game.redraw();
     }
 
-    spawnNewPlayer(otherPlayer) {        
+    removeShape(id) {
+        game.removeShape(id);
+    }
+
+    spawnAllShapes(shapes) {
+        for (var i = 0; i < shapes.length; i++) {
+            game.addShape(shapes[i].id, shapes[i].position, shapes[i].radius, shapes[i].color);
+        }
+    }
+
+    spawnNewPlayer(otherPlayer) {
         game.addPlayerObject(otherPlayer);
     }
 
@@ -26,6 +42,10 @@
 
     spawnCurrentPlayer(player) {
         this.currentPlayer = game.addPlayerObject(player);
+    }
+
+    changePlayerRadius(player) {
+        game.getPlayer(player.id).changeRadius(player.radius);
     }
 
     removePlayer(player) {

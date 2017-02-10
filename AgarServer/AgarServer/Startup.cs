@@ -15,6 +15,8 @@ namespace AgarServer
         {
             app.UseCors(CorsOptions.AllowAll);
             app.MapSignalR();
+            //init Game engine
+            var instance = GameEngine.Instance;
         }
     }
 }
