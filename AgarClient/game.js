@@ -3,8 +3,11 @@
         this.canvas = canvas;
         this.players = {};
         this.shapes = {};
+        this.oldPointX = 0;
+        this.oldPOintY = 0;
+        //this.canvas.getContext().scale(1.2, 1.2);
     }
-    
+
     addShape(id, position, radius, color) {
         let circle = new Circle(position, radius, color);
         this.shapes[id] = circle;
@@ -19,11 +22,15 @@
     }
 
     addPlayer(name, id, position, radius, color) {
-        return this.players[id] = new Player(this.canvas,name, id, position, radius, color);
+        return this.players[id] = new Player(this.canvas, name, id, position, radius, color);
     }
 
-    addPlayerObject(player) {
-        return this.players[player.id] = new Player(this.canvas, player.name, player.id, player.position,player.radius, player.color);
+    addPlayerObject(player, isCurrentPlayer) {
+        let newPlayer = new Player(this.canvas, player.name, player.id, player.position, player.radius, player.color);
+        if (isCurrentPlayer) {
+            this.currentPlayer = newPlayer;
+        }
+        return this.players[player.id] = newPlayer;
     }
 
     getPlayer(id) {
@@ -31,7 +38,25 @@
     }
 
     redraw() {
+        //this.canvas.zoomToPoint({
+        //    x: this.oldPointX,
+        //    y: this.oldPointY,
+        //}, 1);
+
+        this.oldPointX = this.currentPlayer.circle.circle.left;
+        this.oldPOintY = this.currentPlayer.circle.circle.top;
         this.canvas.renderAll();
+        
+        let scrollTop = this.currentPlayer.circle.circle.top + (this.currentPlayer.circle.radius) - window.innerHeight / 2;
+        let scrollLeft = this.currentPlayer.circle.circle.left + (this.currentPlayer.circle.radius) - window.innerWidth / 2;
+        $(document.body).scrollTop(scrollTop);
+        $(document.body).scrollLeft(scrollLeft);
+
+        //console.log(this.currentPlayer.circle.circle.top);
+        //this.canvas.zoomToPoint({
+        //    x: this.currentPlayer.circle.circle.left,
+        //    y: this.currentPlayer.circle.circle.top
+        //}, 2);
     }
 
     removePlayer(id) {

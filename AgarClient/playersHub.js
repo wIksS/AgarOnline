@@ -10,6 +10,7 @@
         this.hub.client.spawnAllShapes = this.spawnAllShapes.bind(this);
         this.hub.client.changePlayerRadius = this.changePlayerRadius.bind(this);
         this.hub.client.removeShape = this.removeShape.bind(this);
+        this.hub.client.spawnShape = this.spawnShape.bind(this);
     }
 
     updatePlayer(response) {
@@ -17,6 +18,7 @@
         if (player) {
             player.move(response.position);
         }
+
         game.redraw();
     }
 
@@ -30,6 +32,10 @@
         }
     }
 
+    spawnShape(shape) {
+        game.addShape(shape.id, shape.position, shape.radius, shape.color);
+    }
+
     spawnNewPlayer(otherPlayer) {
         game.addPlayerObject(otherPlayer);
     }
@@ -41,7 +47,7 @@
     }
 
     spawnCurrentPlayer(player) {
-        this.currentPlayer = game.addPlayerObject(player);
+        this.currentPlayer = game.addPlayerObject(player, true);
     }
 
     changePlayerRadius(player) {

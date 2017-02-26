@@ -4,14 +4,14 @@
     <title></title>
     <meta charset="utf-8" />
     <link rel="stylesheet" types="text/css" href="styles.css" />
-    <canvas id="gameCanvas" width="1300" height="600" style="border:1px solid #000000;"></canvas>
+    <canvas id="gameCanvas" width="2300" height="1600" style="border:1px solid #000000;"></canvas>
 </head>
 <body>
     <!--<div class="circle"></div>-->
 
     <script src="Scripts/jquery-1.12.4.js"></script>
     <script src="Scripts/jquery.signalR-2.2.1.js"></script>
-    <script src="http://localhost:17962/signalr/hubs"></script>
+    <script src="http://agarserver.apphb.com/signalr/hubs"></script>
     <script src="Scripts/fabric.js"></script>
     <script src="position.js"></script>
     <script src="circle.js"></script>
@@ -29,7 +29,7 @@
             canvas = new fabric.Canvas('gameCanvas');
             game = new Game(canvas);
             let playerHub = $.connection.playerHub;
-            $.connection.hub.url = "http://localhost:17962/signalr";
+            $.connection.hub.url = "http://agarserver.apphb.com/signalr";
             playersHub = new PlayersHub(playerHub, game);
             
             $.connection.hub.start().done(function () {
@@ -39,7 +39,7 @@
             setInterval(updateMousePosition, 50);
         });
 
-        function updateMousePosition() {
+        function updateMousePosition(   ) {
             if (moved && playersHub.currentPlayer) {
                 var player = game.getPlayer(playersHub.currentPlayer.id);
                 if (player) {
