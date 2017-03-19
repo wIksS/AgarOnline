@@ -3,8 +3,6 @@
         this.canvas = canvas;
         this.players = {};
         this.shapes = {};
-        this.oldPointX = 0;
-        this.oldPOintY = 0;
         //this.canvas.getContext().scale(1.2, 1.2);
     }
 
@@ -12,6 +10,14 @@
         let circle = new Circle(position, radius, color);
         this.shapes[id] = circle;
         circle.draw(this.canvas);
+    }
+
+    updateShape(id,position)
+    {
+        let circle = this.shapes[id];
+        if (circle) {
+            circle.move(this.canvas, position);
+        }
     }
 
     removeShape(id) {
@@ -42,15 +48,13 @@
         //    x: this.oldPointX,
         //    y: this.oldPointY,
         //}, 1);
-
-        this.oldPointX = this.currentPlayer.circle.circle.left;
-        this.oldPOintY = this.currentPlayer.circle.circle.top;
         this.canvas.renderAll();
-        
-        let scrollTop = this.currentPlayer.circle.circle.top + (this.currentPlayer.circle.radius) - window.innerHeight / 2;
-        let scrollLeft = this.currentPlayer.circle.circle.left + (this.currentPlayer.circle.radius) - window.innerWidth / 2;
-        $(document.body).scrollTop(scrollTop);
-        $(document.body).scrollLeft(scrollLeft);
+        if (this.currentPlayer && this.currentPlayer.circle) {
+            let scrollTop = this.currentPlayer.circle.circle.top + (this.currentPlayer.circle.radius) - window.innerHeight / 2;
+            let scrollLeft = this.currentPlayer.circle.circle.left + (this.currentPlayer.circle.radius) - window.innerWidth / 2;
+            $(document.body).scrollTop(scrollTop);
+            $(document.body).scrollLeft(scrollLeft);
+        }
 
         //console.log(this.currentPlayer.circle.circle.top);
         //this.canvas.zoomToPoint({

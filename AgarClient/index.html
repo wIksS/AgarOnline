@@ -11,7 +11,7 @@
 
     <script src="Scripts/jquery-1.12.4.js"></script>
     <script src="Scripts/jquery.signalR-2.2.1.js"></script>
-    <script src="http://agarserver.apphb.com/signalr/hubs"></script>
+    <script src="http://agarclient.apphb.com/signalr/hubs"></script>
     <script src="Scripts/fabric.js"></script>
     <script src="position.js"></script>
     <script src="circle.js"></script>
@@ -29,7 +29,7 @@
             canvas = new fabric.Canvas('gameCanvas');
             game = new Game(canvas);
             let playerHub = $.connection.playerHub;
-            $.connection.hub.url = "http://agarserver.apphb.com/signalr";
+            $.connection.hub.url = "http://agarclient.apphb.com/signalr";
             playersHub = new PlayersHub(playerHub, game);
             
             $.connection.hub.start().done(function () {
@@ -51,6 +51,12 @@
                 moved = false;
             }
         }
+
+        $(document).on("keypress", function (e) {
+            if (e.keyCode === 32) {
+                playersHub.hub.server.splitPlayer(game.currentPlayer.id);
+            }
+        });
 
         $("body").mousemove(function (event) {
             moved = true;
